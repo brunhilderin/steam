@@ -150,114 +150,38 @@
             box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
         }
         
-        /* OOPZ链接 - 修复错位版 */
+        /* OOPZ链接 */
         .oopz-link {
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, 
-                rgba(0, 150, 255, 0.08), 
-                rgba(100, 0, 255, 0.08));
-            padding: 20px;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
             text-decoration: none;
             color: white;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(5px);
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 10px;
+            transition: all 0.3s;
         }
         
         .oopz-link:hover {
-            background: linear-gradient(135deg, 
-                rgba(0, 150, 255, 0.15), 
-                rgba(100, 0, 255, 0.15));
-            transform: translateX(8px);
-            border-color: rgba(0, 219, 222, 0.4);
-            box-shadow: 0 8px 25px rgba(0, 150, 255, 0.15);
-        }
-        
-        .oopz-link::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(30deg);
-            transition: transform 0.5s ease;
-        }
-        
-        .oopz-link:hover::after {
-            transform: rotate(30deg) translate(20%, 20%);
+            background: rgba(0, 150, 255, 0.15);
+            transform: translateX(5px);
         }
         
         .oopz-icon {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            margin-right: 18px;
-            overflow: hidden;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            margin-right: 15px;
             flex-shrink: 0;
-            background: linear-gradient(135deg, #0066ff, #6600ff);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
-            position: relative;
-            z-index: 1;
+            overflow: hidden;
+            border: 2px solid rgba(0, 150, 255, 0.3);
         }
         
         .oopz-icon img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* 针对500x500图片优化 */
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        /* 确保500x500图片居中显示 */
-        .oopz-icon img.oopz-large-img {
-            transform: scale(1.1); /* 稍微放大确保填充 */
-            object-position: center center;
-        }
-        
-        .oopz-link:hover .oopz-icon {
-            box-shadow: 0 6px 18px rgba(0, 102, 255, 0.5);
-            transform: rotate(5deg) scale(1.05);
-        }
-        
-        .oopz-link:hover .oopz-icon img {
-            transform: scale(1.1);
-        }
-        
-        .oopz-text {
-            position: relative;
-            z-index: 1;
-            flex: 1;
-        }
-        
-        .oopz-text-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 4px;
-            background: linear-gradient(45deg, #66c0f4, #b19cff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .oopz-text-subtitle {
-            font-size: 0.85em;
-            color: #b0b0ff;
-            opacity: 0.9;
+            object-fit: cover;
         }
         
         footer {
@@ -276,6 +200,15 @@
             border: 3px solid #9b59b6;
             margin-bottom: 15px;
             image-rendering: auto;
+        }
+        
+        /* 更新指示器 */
+        .update-indicator {
+            font-size: 0.8em;
+            color: #66c0f4;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         /* 相册样式 */
@@ -364,15 +297,6 @@
             margin-bottom: 10px;
         }
         
-        /* 更新指示器 */
-        .update-indicator {
-            font-size: 0.8em;
-            color: #66c0f4;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
         /* 统计信息 */
         .stat-box {
             text-align: center;
@@ -384,25 +308,11 @@
             font-weight: bold;
             color: var(--primary);
             margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0, 219, 222, 0.3);
         }
         
         .stat-label {
             color: #a0a0ff;
             font-size: 1.1em;
-        }
-        
-        /* 修复头像加载样式 */
-        .avatar-fallback {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            font-weight: bold;
-            color: white;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
         }
     </style>
 </head>
@@ -423,14 +333,13 @@
                         <i class="fas fa-plug"></i>
                         快速入口
                     </div>
-                    <a href="https://oopz.cn/i/vq88lo" target="_blank" class="oopz-link">
+                    <a href="https://oopz.fun" target="_blank" class="oopz-link">
                         <div class="oopz-icon">
-                            <img src="oopz.jpg" alt="OOPZ" class="oopz-large-img" 
-                                 onerror="this.onerror=null; this.classList.remove('oopz-large-img'); this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"50\" height=\"50\"><rect width=\"50\" height=\"50\" fill=\"%230066ff\" rx=\"10\"/><text x=\"25\" y=\"30\" font-size=\"24\" fill=\"white\" font-family=\"Arial\" font-weight=\"bold\" text-anchor=\"middle\">O</text></svg>';">
+                            <img src="oopz.jpg" alt="OOPZ" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"36\" height=\"36\"><rect width=\"36\" height=\"36\" fill=\"%230066ff\"/><text x=\"18\" y=\"20\" font-size=\"16\" fill=\"white\" font-family=\"Arial\" font-weight=\"bold\" text-anchor=\"middle\">O</text></svg>'">
                         </div>
-                        <div class="oopz-text">
-                            <div class="oopz-text-title">OOPZ 主页</div>
-                            <div class="oopz-text-subtitle">点击访问 OOPZ 应用</div>
+                        <div>
+                            <div style="font-weight: bold;">OOPZ 主页</div>
+                            <div style="font-size: 0.9em; color: #b0b0ff;">点击访问 OOPZ.FUN</div>
                         </div>
                     </a>
                 </div>
@@ -445,9 +354,9 @@
                         <div class="stat-number">9</div>
                         <div class="stat-label">Steam好友</div>
                     </div>
-                    <div class="update-indicator" style="margin-top: 15px; justify-content: center;">
-                        <i class="fas fa-sync-alt"></i>
-                        头像链接永久有效
+                    <div class="update-indicator" style="margin-top: 15px;">
+                        <i class="fas fa-info-circle"></i>
+                        头像永久有效，自动更新
                     </div>
                 </div>
                 
@@ -465,9 +374,6 @@
                             <li>系统会自动加载显示</li>
                             <li>点击照片可放大查看</li>
                         </ol>
-                        <div style="margin-top: 15px; padding: 10px; background: rgba(0, 150, 255, 0.1); border-radius: 8px; border-left: 3px solid var(--primary);">
-                            <strong>提示：</strong> 建议使用正方形图片，效果最佳
-                        </div>
                     </div>
                 </div>
             </div>
@@ -488,7 +394,7 @@
                                  alt="业火" 
                                  class="gif-avatar" 
                                  style="border-color: #3498db;">
-                            <div class="friend-name">业火</div>
+                            <div class="friend-name">🔥 业火</div>
                             <a href="https://steamcommunity.com/profiles/76561198131949830" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -500,7 +406,7 @@
                                  alt="染桐" 
                                  class="friend-avatar" 
                                  style="border-color: #e74c3c;">
-                            <div class="friend-name">染桐</div>
+                            <div class="friend-name">🍂 染桐</div>
                             <a href="https://steamcommunity.com/profiles/76561198321055486" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -512,19 +418,19 @@
                                  alt="蓝天" 
                                  class="friend-avatar" 
                                  style="border-color: #2ecc71;">
-                            <div class="friend-name">蓝天</div>
+                            <div class="friend-name">☁️ 蓝天</div>
                             <a href="https://steamcommunity.com/profiles/76561198328781801" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
                         </div>
                         
-                        <!-- Sora -->
+                        <!-- sora -->
                         <div class="steam-friend">
                             <img src="https://avatars.fastly.steamstatic.com/3a570f748096459c44a2ff63fbb796f010aa28a5_full.jpg" 
                                  alt="sora" 
                                  class="friend-avatar" 
                                  style="border-color: #f39c12;">
-                            <div class="friend-name">Sora</div>
+                            <div class="friend-name">🌌 sora</div>
                             <a href="https://steamcommunity.com/profiles/76561198239068292" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -535,7 +441,7 @@
                             <img src="https://shared.fastly.steamstatic.com/community_assets/images/items/3296260/ea50cd34208e8b6470a0ba96171c98b8d4fb7176.gif" 
                                  alt="亚托莉" 
                                  class="gif-avatar">
-                            <div class="friend-name">亚托莉</div>
+                            <div class="friend-name">🎀 亚托莉</div>
                             <a href="https://steamcommunity.com/profiles/76561198997805405" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -547,7 +453,7 @@
                                  alt="雪音" 
                                  class="friend-avatar" 
                                  style="border-color: #1abc9c;">
-                            <div class="friend-name">雪音</div>
+                            <div class="friend-name">❄️ 雪音</div>
                             <a href="https://steamcommunity.com/profiles/76561198285340324" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -559,7 +465,7 @@
                                  alt="023" 
                                  class="friend-avatar" 
                                  style="border-color: #e67e22;">
-                            <div class="friend-name">023</div>
+                            <div class="friend-name">🔢 023</div>
                             <a href="https://steamcommunity.com/profiles/76561198256933910" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -571,7 +477,7 @@
                                  alt="柠檬" 
                                  class="friend-avatar" 
                                  style="border-color: #95a5a6;">
-                            <div class="friend-name">柠檬</div>
+                            <div class="friend-name">🍋 柠檬</div>
                             <a href="https://steamcommunity.com/profiles/76561198281864482" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -583,7 +489,7 @@
                                  alt="众星陨落" 
                                  class="friend-avatar" 
                                  style="border-color: #d35400;">
-                            <div class="friend-name">众星陨落</div>
+                            <div class="friend-name">⭐ 众星陨落</div>
                             <a href="https://steamcommunity.com/profiles/76561199146963946" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -610,10 +516,10 @@
         </div>
         
         <footer>
-            <p>© 2024 Steam好友主页 | 永久头像链接 | 纪念相册</p>
+            <p>© 2024 Steam好友主页 | 永久头像链接 | 个人主页直达 | 纪念相册</p>
             <p style="margin-top: 10px; font-size: 0.9em; color: #66c0f4;">
                 <i class="fas fa-image"></i> 头像自动更新 | 
-                <i class="fas fa-external-link-alt"></i> Steam主页直达 | 
+                <i class="fas fa-external-link-alt"></i> 点击访问Steam主页 | 
                 <i class="fas fa-camera"></i> 相册功能
             </p>
         </footer>
@@ -694,11 +600,9 @@
                         <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #a0a0ff;">
                             <i class="fas fa-images" style="font-size: 3em; margin-bottom: 20px;"></i>
                             <div style="font-size: 1.1em; margin-bottom: 15px;">相册空空如也</div>
-                            <div style="font-size: 0.9em; color: #888; line-height: 1.5; max-width: 500px; margin: 0 auto;">
+                            <div style="font-size: 0.9em; color: #888; line-height: 1.5;">
                                 请上传照片到网站根目录，命名为：<br>
-                                <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 5px; margin-top: 5px; display: inline-block;">
-                                    photo1.jpg, photo2.jpg, photo3.jpg...
-                                </code>
+                                photo1.jpg, photo2.jpg, photo3.jpg...
                             </div>
                         </div>
                     `;
@@ -734,8 +638,7 @@
                 lightbox.option({
                     'resizeDuration': 200,
                     'wrapAround': true,
-                    'albumLabel': '照片 %1 / %2',
-                    'fadeDuration': 300
+                    'albumLabel': '照片 %1 / %2'
                 });
                 
             } catch (error) {
@@ -773,27 +676,6 @@
             alert(guide);
         }
 
-        // 修复OOPZ图标显示
-        function fixOopzIcon() {
-            const oopzImg = document.querySelector('.oopz-icon img');
-            if (oopzImg) {
-                // 检查图片是否加载成功
-                oopzImg.onload = function() {
-                    // 如果是500x500的大图片，添加特定类名
-                    if (oopzImg.naturalWidth === 500 && oopzImg.naturalHeight === 500) {
-                        oopzImg.classList.add('oopz-large-img');
-                    }
-                };
-                
-                // 如果图片已经加载完成
-                if (oopzImg.complete) {
-                    if (oopzImg.naturalWidth === 500 && oopzImg.naturalHeight === 500) {
-                        oopzImg.classList.add('oopz-large-img');
-                    }
-                }
-            }
-        }
-
         // 页面初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 访问计数
@@ -803,9 +685,6 @@
             
             // 加载相册
             loadPhotoAlbum();
-            
-            // 修复OOPZ图标
-            fixOopzIcon();
             
             // 头像加载错误处理
             document.querySelectorAll('.friend-avatar, .gif-avatar').forEach(img => {
@@ -821,10 +700,10 @@
             // 控制台欢迎信息
             console.log('🎮 Steam好友主页已加载');
             console.log('👥 好友数量: 9');
-            console.log('🖼️ OOPZ图标: 已修复500x500图片错位问题');
+            console.log('🖼️ 所有头像使用Steam永久链接');
+            console.log('🔗 主页链接使用SteamID64格式');
+            console.log('🚀 OOPZ入口: https://oopz.fun');
             console.log('📸 相册功能: 已启用');
-            console.log('🔗 主页链接: SteamID64格式');
-            console.log('📍 访问次数:', visitCount);
         });
         
         // 每5分钟检查一次新照片
