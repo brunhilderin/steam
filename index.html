@@ -149,8 +149,8 @@
             box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
         }
         
-        /* 语音链接 */
-        .voice-link {
+        /* OOPZ链接 */
+        .oopz-link {
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.05);
@@ -162,9 +162,23 @@
             transition: all 0.3s;
         }
         
-        .voice-link:hover {
-            background: rgba(0, 219, 222, 0.15);
+        .oopz-link:hover {
+            background: rgba(0, 150, 255, 0.15);
             transform: translateX(5px);
+        }
+        
+        .oopz-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #0066ff, #00ccff);
+            border-radius: 8px;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
         }
         
         footer {
@@ -206,33 +220,17 @@
         <div class="content">
             <!-- 左侧 -->
             <div>
-                <!-- 语音频道 -->
+                <!-- OOPZ入口 -->
                 <div class="panel">
                     <div class="panel-title">
-                        <i class="fas fa-microphone-alt"></i>
-                        语音频道
+                        <i class="fas fa-plug"></i>
+                        快速入口
                     </div>
-                    <a href="https://discord.gg/你的邀请码" target="_blank" class="voice-link">
-                        <i class="fab fa-discord" style="color: #7289da; margin-right: 15px;"></i>
+                    <a href="https://oopz.fun" target="_blank" class="oopz-link">
+                        <div class="oopz-icon">O</div>
                         <div>
-                            <div style="font-weight: bold;">Discord 主频道</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">主要语音聊天</div>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="voice-link">
-                        <i class="fab fa-weixin" style="color: #07c160; margin-right: 15px;"></i>
-                        <div>
-                            <div style="font-weight: bold;">微信群聊</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">日常聊天约战</div>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="voice-link">
-                        <i class="fab fa-teamspeak" style="color: #2580c3; margin-right: 15px;"></i>
-                        <div>
-                            <div style="font-weight: bold;">TeamSpeak 3</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">低延迟语音</div>
+                            <div style="font-weight: bold;">OOPZ 主页</div>
+                            <div style="font-size: 0.9em; color: #b0b0ff;">点击访问 OOPZ.FUN</div>
                         </div>
                     </a>
                 </div>
@@ -248,7 +246,7 @@
                         <div style="color: #a0a0ff;">Steam好友</div>
                     </div>
                     <div class="update-indicator" style="margin-top: 15px;">
-                       
+                        
                     </div>
                 </div>
             </div>
@@ -396,6 +394,7 @@
             console.log('👥 好友数量: 9');
             console.log('🖼️ 所有头像使用Steam永久链接');
             console.log('🔗 主页链接使用SteamID64格式');
+            console.log('🚀 OOPZ入口: https://oopz.fun');
             
             // 头像加载错误处理
             document.querySelectorAll('.friend-avatar, .gif-avatar').forEach(img => {
@@ -413,32 +412,3 @@
 </html>
 EOF
 
-echo "✅ 简化版代码已生成！"
-echo ""
-echo "🎯 功能特点："
-echo "1. ✅ 无API密钥，完全静态"
-echo "2. ✅ 无在线状态显示"
-echo "3. ✅ 只显示头像和Steam主页链接"
-echo "4. ✅ 使用SteamID64格式的永久链接"
-echo "5. ✅ 头像永久有效，换头像自动更新"
-echo ""
-echo "🔗 好友主页链接格式："
-echo "https://steamcommunity.com/profiles/76561198xxxxxxxxx"
-echo ""
-echo "🖼️ 头像链接特点："
-echo "• 永久链接，好友换头像时自动更新"
-echo "• 支持GIF动态头像"
-echo "• 加载失败时显示彩色占位图"
-echo ""
-echo "🚀 部署步骤："
-echo "1. 保存为 index.html"
-echo "2. 上传到GitHub仓库"
-echo "3. 在Vercel导入部署"
-echo "4. 访问生成的vercel.app域名"
-echo ""
-echo "🔧 可自定义项："
-echo "• 第160行：替换Discord邀请链接"
-echo "• 可添加更多语音频道"
-echo "• 可修改好友显示顺序"
-echo ""
-echo "📱 完全响应式，手机电脑都能正常访问！"
