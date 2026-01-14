@@ -4,7 +4,7 @@ cat > index.html << 'EOF'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Steam游戏社区</title>
+    <title>🎮 Steam游戏社区 - 实时状态</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -93,24 +93,6 @@ cat > index.html << 'EOF'
             gap: 10px;
         }
         
-        /* 语音链接 */
-        .voice-link {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: white;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-        }
-        
-        .voice-link:hover {
-            background: rgba(0, 219, 222, 0.15);
-            transform: translateX(5px);
-        }
-        
         /* Steam好友网格 */
         .steam-grid {
             display: grid;
@@ -151,6 +133,16 @@ cat > index.html << 'EOF'
             font-weight: bold;
             margin-bottom: 10px;
             font-size: 1.1em;
+        }
+        
+        .friend-game {
+            font-size: 0.85em;
+            color: #b0b0ff;
+            margin-bottom: 10px;
+            min-height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .friend-status {
@@ -223,6 +215,21 @@ cat > index.html << 'EOF'
             color: #a0a0ff;
         }
         
+        /* 加载状态 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         footer {
             text-align: center;
             margin-top: 40px;
@@ -231,7 +238,15 @@ cat > index.html << 'EOF'
             border-top: 1px solid rgba(255,255,255,0.1);
         }
         
-        /* 亚托莉的GIF特殊处理 */
+        /* 更新指示器 */
+        .update-indicator {
+            font-size: 0.8em;
+            color: #66c0f4;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
         .gif-avatar {
             width: 80px;
             height: 80px;
@@ -247,49 +262,17 @@ cat > index.html << 'EOF'
     <div class="container">
         <header>
             <h1><i class="fas fa-gamepad"></i> Steam游戏社区</h1>
-            <p class="subtitle">永久头像链接 | 实时状态更新</p>
-            <p>所有头像使用Steam永久链接，换头像自动更新</p>
+            <p class="subtitle">实时状态 | Steam API | 自动更新</p>
+            <p>数据每30秒自动刷新，显示真实游戏状态</p>
         </header>
         
         <div class="content">
             <!-- 左侧 -->
             <div>
-                <!-- 语音频道 -->
-                <div class="panel">
-                    <div class="panel-title">
-                        <i class="fas fa-microphone-alt"></i>
-                        语音频道
-                    </div>
-                    <a href="https://discord.gg/你的邀请码" target="_blank" class="voice-link">
-                        <i class="fab fa-discord" style="color: #7289da; margin-right: 15px;"></i>
-                        <div>
-                            <div style="font-weight: bold;">Discord 主频道</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">主要语音聊天</div>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="voice-link">
-                        <i class="fab fa-weixin" style="color: #07c160; margin-right: 15px;"></i>
-                        <div>
-                            <div style="font-weight: bold;">微信群聊</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">日常聊天约战</div>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="voice-link">
-                        <i class="fab fa-teamspeak" style="color: #2580c3; margin-right: 15px;"></i>
-                        <div>
-                            <div style="font-weight: bold;">TeamSpeak 3</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">低延迟语音</div>
-                        </div>
-                    </a>
-                </div>
-                
-                <!-- 社区统计 -->
                 <div class="panel">
                     <div class="panel-title">
                         <i class="fas fa-chart-line"></i>
-                        社区统计
+                        实时统计
                     </div>
                     <div class="stats">
                         <div class="stat-item">
@@ -297,144 +280,55 @@ cat > index.html << 'EOF'
                             <div class="stat-label">Steam好友</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number" id="onlineCount">5</div>
+                            <div class="stat-number" id="onlineCount">0</div>
                             <div class="stat-label">在线人数</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number" id="totalHours">1420</div>
-                            <div class="stat-label">游戏时长</div>
+                            <div class="stat-number" id="ingameCount">0</div>
+                            <div class="stat-label">游戏中</div>
                         </div>
+                    </div>
+                    <div class="update-indicator" style="margin-top: 15px;">
+                        <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                        最后更新: <span id="lastUpdate">正在加载...</span>
+                    </div>
+                </div>
+                
+                <!-- 控制面板 -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-cogs"></i>
+                        控制面板
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <button onclick="refreshAll()" style="flex:1; padding: 10px; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 10px; cursor: pointer;">
+                            <i class="fas fa-sync-alt"></i> 立即刷新
+                        </button>
+                        <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" style="flex:1; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; cursor: pointer;">
+                            <i class="fas fa-play"></i> 自动刷新
+                        </button>
+                    </div>
+                    <div style="font-size: 0.9em; color: #a0a0ff;">
+                        <i class="fas fa-info-circle"></i> 数据来源: Steam Web API
                     </div>
                 </div>
             </div>
             
             <!-- 右侧 -->
             <div>
-                <!-- Steam好友 -->
                 <div class="panel">
                     <div class="panel-title">
                         <i class="fab fa-steam"></i>
-                        Steam好友列表
-                        <span style="font-size: 0.8em; color: #66c0f4; margin-left: auto;">
-                            <i class="fas fa-sync-alt" onclick="refreshStatus()" style="cursor: pointer;"></i>
-                            点击刷新状态
+                        Steam好友实时状态
+                        <span id="apiStatus" style="font-size: 0.8em; color: #2ecc71; margin-left: auto;">
+                            <i class="fas fa-circle"></i> API正常
                         </span>
                     </div>
                     
-                    <div class="steam-grid">
-                        <!-- 染桐 -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/c086624ce7e80b730e13521d9b8e6fd5b5c5b466_full.jpg" 
-                                 alt="染桐" 
-                                 class="friend-avatar" 
-                                 style="border-color: #e74c3c;">
-                            <div class="friend-name">🍂 染桐</div>
-                            <span class="friend-status status-ingame"></span>
-                            <a href="https://steamcommunity.com/profiles/76561198131949830/" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-
-                        <!-- 业火 -->
-                        <div class="steam-friend">
-                            <img src="https://shared.fastly.steamstatic.com/community_assets/images/items/1604380/9815092e5144a3c4e1ef08cbe55589d652d822fc.gif" 
-                                 alt="业火" 
-                                 class="friend-avatar" 
-                                 style="border-color: #2ecc71;">
-                            <div class="friend-name">业火</div>
-                            <span class="friend-status status-online"></span>
-                            <a href="https://steamcommunity.com/profiles/76561198131949830" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        <!-- 蓝天 -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/e564b211f5d31d7c59727f18835fdb4639e22b01_full.jpg" 
-                                 alt="蓝天" 
-                                 class="friend-avatar" 
-                                 style="border-color: #2ecc71;">
-                            <div class="friend-name">☁️ 蓝天</div>
-                            <span class="friend-status status-online"></span>
-                            <a href="https://steamcommunity.com/profiles/76561198328781801" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        
-                        <!-- sora -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/3a570f748096459c44a2ff63fbb796f010aa28a5_full.jpg" 
-                                 alt="sora" 
-                                 class="friend-avatar" 
-                                 style="border-color: #f39c12;">
-                            <div class="friend-name">🌌 sora</div>
-                            <span class="friend-status status-ingame"></span>
-                            <a href="https://steamcommunity.com/id/lz1453" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        
-                        <!-- 亚托莉 -->
-                        <div class="steam-friend">
-                            <img src="https://shared.fastly.steamstatic.com/community_assets/images/items/3296260/ea50cd34208e8b6470a0ba96171c98b8d4fb7176.gif" 
-                                 alt="亚托莉" 
-                                 class="gif-avatar">
-                            <div class="friend-name">🎀 亚托莉</div>
-                            <span class="friend-status status-offline"></span>
-                            <a href="https://steamcommunity.com/profiles/76561198997805405" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        
-                        <!-- 雪音 -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/18bb92cbf8eb8ff2f4c4e39c3795c69bfa318c12_full.jpg" 
-                                 alt="雪音" 
-                                 class="friend-avatar" 
-                                 style="border-color: #1abc9c;">
-                            <div class="friend-name">❄️ 雪音</div>
-                            <span class="friend-status status-online"></span>
-                            <a href="https://steamcommunity.com/id/xueyin602562443" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        
-                        <!-- 023 -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/44c332f8036e11943ddd4e0e44a339b75fbfa172_full.jpg" 
-                                 alt="023" 
-                                 class="friend-avatar" 
-                                 style="border-color: #e67e22;">
-                            <div class="friend-name">🔢 023</div>
-                            <span class="friend-status status-ingame"></span>
-                            <a href="https://steamcommunity.com/profiles/76561198256933910" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        
-                        <!-- 柠檬 -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/49892fb9a051b3aeb1e52a0128fb8a32f45e3a9e_full.jpg" 
-                                 alt="柠檬" 
-                                 class="friend-avatar" 
-                                 style="border-color: #95a5a6;">
-                            <div class="friend-name">🍋 柠檬</div>
-                            <span class="friend-status status-online"></span>
-                            <a href="https://steamcommunity.com/id/lemonpaka" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
-                        </div>
-                        
-                        <!-- 众星陨落 -->
-                        <div class="steam-friend">
-                            <img src="https://avatars.fastly.steamstatic.com/470c463e0d8e191e70632d43bdfb6b21f9822eef_full.jpg" 
-                                 alt="众星陨落" 
-                                 class="friend-avatar" 
-                                 style="border-color: #d35400;">
-                            <div class="friend-name">⭐ 众星陨落</div>
-                            <span class="friend-status status-online"></span>
-                            <a href="https://steamcommunity.com/profiles/76561199146963946" target="_blank" class="friend-link">
-                                <i class="fab fa-steam"></i> Steam主页
-                            </a>
+                    <div id="steamFriendsContainer" class="steam-grid">
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                            <div class="loading" style="margin: 0 auto 20px;"></div>
+                            <div style="color: #a0a0ff;">正在获取Steam好友状态...</div>
                         </div>
                     </div>
                 </div>
@@ -442,179 +336,358 @@ cat > index.html << 'EOF'
         </div>
         
         <footer>
-            <p>© 2024 Steam游戏社区 | 永久头像链接 | 自动更新状态</p>
+            <p>© 2024 Steam游戏社区 | Steam Web API驱动 | 实时数据</p>
             <p style="margin-top: 10px; font-size: 0.9em; color: #66c0f4;">
-                <i class="fas fa-check-circle"></i> 头像永久有效 | 
+                <i class="fas fa-database"></i> 更新间隔: <span id="updateInterval">30</span>秒 | 
                 <i class="fas fa-eye"></i> 访问: <span id="visitCount">1</span> 次 | 
-                <i class="fas fa-clock"></i> 更新: <span id="lastUpdate">刚刚</span>
+                <i class="fas fa-clock"></i> 响应时间: <span id="responseTime">0</span>ms
             </p>
         </footer>
     </div>
 
     <script>
-        // 好友数据
+        // ============== 配置部分 ==============
+        // 在这里填入你的Steam API Key
+        const STEAM_API_KEY = '09D7A8FBE3FA68C925541A687CE0DD12';
+        
+        // Steam好友数据 - 需要填入真实的SteamID
         const steamFriends = [
             {
-                name: "染桐",
-                status: "ingame",
-                element: null
+                name: "业火",
+                steamId: "76561198812345678", // ⚠️ 需要真实SteamID
+                profileUrl: "https://steamcommunity.com/id/Yukige_Shiki",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/c086624ce7e80b730e13521d9b8e6fd5b5c5b466_full.jpg",
+                color: "#3498db"
             },
             {
-                name: "蓝天", 
-                status: "online",
-                element: null
+                name: "染桐",
+                steamId: "76561198887654321", // ⚠️ 需要真实SteamID
+                profileUrl: "https://steamcommunity.com/id/245181274",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/c086624ce7e80b730e13521d9b8e6fd5b5c5b466_full.jpg",
+                color: "#e74c3c"
+            },
+            {
+                name: "蓝天",
+                steamId: "76561198328781801",
+                profileUrl: "https://steamcommunity.com/profiles/76561198328781801",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/e564b211f5d31d7c59727f18835fdb4639e22b01_full.jpg",
+                color: "#2ecc71"
             },
             {
                 name: "sora",
-                status: "ingame",
-                element: null
+                steamId: "76561198876543210", // ⚠️ 需要真实SteamID
+                profileUrl: "https://steamcommunity.com/id/lz1453",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/3a570f748096459c44a2ff63fbb796f010aa28a5_full.jpg",
+                color: "#f39c12"
             },
             {
                 name: "亚托莉",
-                status: "offline",
-                element: null
+                steamId: "76561198997805405",
+                profileUrl: "https://steamcommunity.com/profiles/76561198997805405",
+                avatarUrl: "https://shared.fastly.steamstatic.com/community_assets/images/items/3296260/ea50cd34208e8b6470a0ba96171c98b8d4fb7176.gif",
+                color: "#9b59b6"
             },
             {
                 name: "雪音",
-                status: "online",
-                element: null
+                steamId: "76561198765432109", // ⚠️ 需要真实SteamID
+                profileUrl: "https://steamcommunity.com/id/xueyin602562443",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/18bb92cbf8eb8ff2f4c4e39c3795c69bfa318c12_full.jpg",
+                color: "#1abc9c"
             },
             {
                 name: "023",
-                status: "ingame",
-                element: null
+                steamId: "76561198256933910",
+                profileUrl: "https://steamcommunity.com/profiles/76561198256933910",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/44c332f8036e11943ddd4e0e44a339b75fbfa172_full.jpg",
+                color: "#e67e22"
             },
             {
                 name: "柠檬",
-                status: "online",
-                element: null
+                steamId: "76561198654321098", // ⚠️ 需要真实SteamID
+                profileUrl: "https://steamcommunity.com/id/lemonpaka",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/49892fb9a051b3aeb1e52a0128fb8a32f45e3a9e_full.jpg",
+                color: "#95a5a6"
             },
             {
                 name: "众星陨落",
-                status: "online",
-                element: null
+                steamId: "76561199146963946",
+                profileUrl: "https://steamcommunity.com/profiles/76561199146963946",
+                avatarUrl: "https://avatars.fastly.steamstatic.com/470c463e0d8e191e70632d43bdfb6b21f9822eef_full.jpg",
+                color: "#d35400"
             }
         ];
-
-        // 状态更新函数
-        function refreshStatus() {
-            const refreshBtn = document.querySelector('.fa-sync-alt');
-            refreshBtn.style.animation = 'spin 1s linear';
+        
+        // ============== 核心功能 ==============
+        let autoRefreshInterval = null;
+        let isAutoRefreshEnabled = true;
+        const UPDATE_INTERVAL = 30000; // 30秒
+        
+        // 获取Steam好友状态
+        async function getSteamFriendsStatus() {
+            const startTime = Date.now();
             
-            // 模拟状态变化
-            const games = ['CS2', 'Dota 2', 'PUBG', 'Apex Legends', '待机'];
-            
-            steamFriends.forEach(friend => {
-                // 30%几率改变状态
-                if (Math.random() < 0.3) {
-                    const oldStatus = friend.status;
-                    const statuses = ['online', 'ingame', 'offline'];
-                    const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
-                    
-                    if (oldStatus !== newStatus) {
-                        friend.status = newStatus;
-                        
-                        // 更新对应的DOM元素
-                        const friendElements = document.querySelectorAll('.steam-friend');
-                        friendElements.forEach(el => {
-                            const nameEl = el.querySelector('.friend-name');
-                            if (nameEl && nameEl.textContent.includes(friend.name)) {
-                                const statusEl = el.querySelector('.friend-status');
-                                if (statusEl) {
-                                    statusEl.className = `friend-status status-${newStatus}`;
-                                    statusEl.textContent = newStatus === 'ingame' ? '游戏中' : 
-                                                          newStatus === 'online' ? '在线' : '离线';
-                                }
-                            }
-                        });
-                        
-                        console.log(`${friend.name} 状态更新: ${oldStatus} → ${newStatus}`);
+            try {
+                // 提取所有SteamID
+                const steamIds = steamFriends.map(f => f.steamId).filter(id => id).join(',');
+                
+                // 调用Steam API
+                const response = await fetch(
+                    `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_API_KEY}&steamids=${steamIds}`,
+                    {
+                        headers: {
+                            'User-Agent': 'Steam Community Page/1.0'
+                        }
                     }
+                );
+                
+                const responseTime = Date.now() - startTime;
+                document.getElementById('responseTime').textContent = responseTime;
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
                 }
+                
+                const data = await response.json();
+                
+                // 更新API状态
+                document.getElementById('apiStatus').innerHTML = '<i class="fas fa-circle"></i> API正常';
+                document.getElementById('apiStatus').style.color = '#2ecc71';
+                
+                return {
+                    success: true,
+                    data: data.response.players || [],
+                    timestamp: Date.now()
+                };
+                
+            } catch (error) {
+                console.error('获取Steam状态失败:', error);
+                
+                // 更新API状态
+                document.getElementById('apiStatus').innerHTML = '<i class="fas fa-circle"></i> API异常';
+                document.getElementById('apiStatus').style.color = '#e74c3c';
+                
+                // 返回模拟数据
+                return {
+                    success: false,
+                    data: generateMockData(),
+                    timestamp: Date.now(),
+                    error: error.message
+                };
+            }
+        }
+        
+        // 生成模拟数据（API失败时使用）
+        function generateMockData() {
+            const games = ['CS2', 'Dota 2', 'PUBG', 'Apex Legends', 'Cyberpunk 2077', '待机'];
+            
+            return steamFriends.map(friend => {
+                const isOnline = Math.random() > 0.4;
+                const isIngame = isOnline && Math.random() > 0.6;
+                
+                return {
+                    steamid: friend.steamId,
+                    personaname: friend.name,
+                    profileurl: friend.profileUrl,
+                    avatarfull: friend.avatarUrl,
+                    personastate: isIngame ? 1 : (isOnline ? 1 : 0),
+                    gameextrainfo: isIngame ? games[Math.floor(Math.random() * games.length)] : null
+                };
+            });
+        }
+        
+        // 渲染Steam好友
+        async function renderSteamFriends() {
+            const container = document.getElementById('steamFriendsContainer');
+            const refreshIcon = document.getElementById('refreshIcon');
+            
+            // 显示加载状态
+            refreshIcon.style.animation = 'spin 1s linear infinite';
+            
+            // 获取数据
+            const result = await getSteamFriendsStatus();
+            const players = result.data;
+            
+            // 创建玩家映射
+            const playerMap = {};
+            players.forEach(player => {
+                playerMap[player.steamid] = player;
             });
             
+            // 渲染好友
+            let onlineCount = 0;
+            let ingameCount = 0;
+            
+            const friendsHtml = steamFriends.map(friend => {
+                const player = playerMap[friend.steamId];
+                
+                if (player) {
+                    const isOnline = player.personastate > 0;
+                    const isIngame = player.gameextrainfo !== null;
+                    const status = isIngame ? 'ingame' : (isOnline ? 'online' : 'offline');
+                    const statusText = isIngame ? '游戏中' : (isOnline ? '在线' : '离线');
+                    
+                    // 统计
+                    if (isOnline) onlineCount++;
+                    if (isIngame) ingameCount++;
+                    
+                    return `
+                        <div class="steam-friend">
+                            <img src="${player.avatarfull || friend.avatarUrl}" 
+                                 alt="${friend.name}" 
+                                 class="${friend.avatarUrl.includes('.gif') ? 'gif-avatar' : 'friend-avatar'}" 
+                                 style="border-color: ${friend.color}"
+                                 onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"184\" height=\"184\"><circle cx=\"92\" cy=\"92\" r=\"80\" fill=\"${friend.color}\"/><text x=\"92\" y=\"108\" font-size=\"64\" fill=\"white\" font-family=\"Arial\" text-anchor=\"middle\">${friend.name.charAt(0)}</text></svg>'">
+                            <div class="friend-name">${friend.name}</div>
+                            ${player.gameextrainfo ? `<div class="friend-game">${player.gameextrainfo}</div>` : ''}
+                            <span class="friend-status status-${status}">${statusText}</span>
+                            <a href="${friend.profileUrl}" target="_blank" class="friend-link">
+                                <i class="fab fa-steam"></i> Steam主页
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    // 没有找到数据，显示离线状态
+                    return `
+                        <div class="steam-friend">
+                            <img src="${friend.avatarUrl}" 
+                                 alt="${friend.name}" 
+                                 class="${friend.avatarUrl.includes('.gif') ? 'gif-avatar' : 'friend-avatar'}" 
+                                 style="border-color: ${friend.color}">
+                            <div class="friend-name">${friend.name}</div>
+                            <span class="friend-status status-offline">离线</span>
+                            <a href="${friend.profileUrl}" target="_blank" class="friend-link">
+                                <i class="fab fa-steam"></i> Steam主页
+                            </a>
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            // 更新DOM
+            container.innerHTML = friendsHtml;
+            
             // 更新统计
-            updateStatistics();
+            updateStatistics(onlineCount, ingameCount);
             
             // 更新时间
-            document.getElementById('lastUpdate').textContent = '刚刚';
-            
-            setTimeout(() => {
-                refreshBtn.style.animation = '';
-            }, 1000);
-        }
-
-        // 更新统计信息
-        function updateStatistics() {
-            const onlineCount = steamFriends.filter(f => 
-                f.status === 'online' || f.status === 'ingame'
-            ).length;
-            
-            document.getElementById('onlineCount').textContent = onlineCount;
-            
-            // 更新在线率显示
-            const onlineRate = Math.round((onlineCount / steamFriends.length) * 100);
-            document.getElementById('totalFriends').textContent = steamFriends.length;
-            
-            // 随机增加游戏时长
-            const totalHoursEl = document.getElementById('totalHours');
-            const currentHours = parseInt(totalHoursEl.textContent);
-            totalHoursEl.textContent = currentHours + Math.floor(Math.random() * 3);
-        }
-
-        // 页面初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            // 访问计数
-            let visitCount = localStorage.getItem('steamCommunityVisits') || 0;
-            visitCount++;
-            localStorage.setItem('steamCommunityVisits', visitCount);
-            document.getElementById('visitCount').textContent = visitCount;
-            
-            // 初始统计
-            updateStatistics();
-            
-            // 自动更新状态（每2分钟）
-            setInterval(refreshStatus, 2 * 60 * 1000);
-            
-            // 初始时间
             updateTime();
-            setInterval(updateTime, 60000);
             
-            // 添加旋转动画
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        });
-
+            // 停止加载动画
+            refreshIcon.style.animation = '';
+            
+            // 控制台日志
+            console.log(`✅ 状态更新完成: ${onlineCount}在线, ${ingameCount}游戏中`);
+        }
+        
+        // 更新统计信息
+        function updateStatistics(onlineCount, ingameCount) {
+            document.getElementById('onlineCount').textContent = onlineCount;
+            document.getElementById('ingameCount').textContent = ingameCount;
+            document.getElementById('totalFriends').textContent = steamFriends.length;
+        }
+        
         // 更新时间显示
         function updateTime() {
             const now = new Date();
-            document.getElementById('lastUpdate').textContent = 
-                now.toLocaleTimeString('zh-CN', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false 
-                });
+            const timeStr = now.toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false 
+            });
+            document.getElementById('lastUpdate').textContent = timeStr;
         }
-
-        // 控制台欢迎信息
-        console.log('🎮 Steam社区已加载');
-        console.log('✅ 所有头像使用Steam永久链接');
-        console.log('🔄 状态自动更新中...');
+        
+        // 刷新所有数据
+        async function refreshAll() {
+            await renderSteamFriends();
+            
+            // 显示刷新效果
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.style.animation = 'spin 1s linear';
+            setTimeout(() => {
+                refreshIcon.style.animation = '';
+            }, 1000);
+        }
+        
+        // 切换自动刷新
+        function toggleAutoRefresh() {
+            const button = document.getElementById('autoRefreshBtn');
+            
+            if (isAutoRefreshEnabled) {
+                // 停止自动刷新
+                clearInterval(autoRefreshInterval);
+                button.innerHTML = '<i class="fas fa-play"></i> 启动刷新';
+                button.style.background = 'rgba(46, 204, 113, 0.2)';
+                button.style.color = '#2ecc71';
+                isAutoRefreshEnabled = false;
+                document.getElementById('updateInterval').textContent = '已停止';
+            } else {
+                // 启动自动刷新
+                startAutoRefresh();
+                button.innerHTML = '<i class="fas fa-pause"></i> 停止刷新';
+                button.style.background = 'rgba(231, 76, 60, 0.2)';
+                button.style.color = '#e74c3c';
+                isAutoRefreshEnabled = true;
+                document.getElementById('updateInterval').textContent = UPDATE_INTERVAL / 1000;
+            }
+        }
+        
+        // 启动自动刷新
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(refreshAll, UPDATE_INTERVAL);
+        }
+        
+        // ============== 页面初始化 ==============
+        document.addEventListener('DOMContentLoaded', () => {
+            // 访问计数
+            let visitCount = localStorage.getItem('steamApiVisits') || 0;
+            visitCount++;
+            localStorage.setItem('steamApiVisits', visitCount);
+            document.getElementById('visitCount').textContent = visitCount;
+            
+            // 初始渲染
+            renderSteamFriends();
+            
+            // 启动自动刷新
+            startAutoRefresh();
+            
+            // 设置更新间隔显示
+            document.getElementById('updateInterval').textContent = UPDATE_INTERVAL / 1000;
+            
+            // 控制台欢迎信息
+            console.log('🎮 Steam API社区已加载');
+            console.log('🔑 API Key:', STEAM_API_KEY ? '已设置' : '未设置');
+            console.log('🔄 自动刷新:', UPDATE_INTERVAL / 1000 + '秒');
+            
+            // API Key检查
+            if (!STEAM_API_KEY || STEAM_API_KEY === '你的Steam_API_Key') {
+                console.warn('⚠️ 请设置你的Steam API Key！');
+                document.getElementById('apiStatus').innerHTML = '<i class="fas fa-exclamation-triangle"></i> 需要API Key';
+                document.getElementById('apiStatus').style.color = '#f39c12';
+            }
+        });
+        
+        // 页面可见性变化时刷新
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                refreshAll();
+            }
+        });
     </script>
 </body>
 </html>
 EOF
 
-echo "✅ 完美！HTML文件已创建"
+echo "✅ 单HTML文件方案已创建！"
 echo "🎯 特点："
-echo "1. 使用你提供的永久Steam头像链接"
-echo "2. 亚托莉的GIF头像已特殊处理"
-echo "3. 所有头像都使用真实链接，换头像自动更新"
-echo "4. 包含状态刷新功能"
-echo "5. 一个HTML文件搞定所有"
+echo "1. 一个HTML文件包含所有功能"
+echo "2. 使用Steam API获取实时状态"
+echo "3. 显示真实游戏运行情况"
+echo "4. 自动刷新（30秒间隔）"
+echo "5. 离线降级支持"
+echo ""
+echo "⚠️ 重要：需要修改以下内容："
+echo "1. 第215行：填入你的Steam API Key"
+echo "2. 第220-281行：填入朋友的真实SteamID"
+echo "3. 部署到Vercel即可使用"
