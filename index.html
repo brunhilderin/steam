@@ -1,3 +1,4 @@
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎮 Steam好友主页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <style>
         :root {
             --primary: #00dbde;
@@ -170,11 +172,13 @@
         .oopz-icon {
             width: 36px;
             height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 8px;
             margin-right: 15px;
-            flex-shrink: 0;
             overflow: hidden;
-            border: 2px solid rgba(0, 150, 255, 0.3);
+            flex-shrink: 0;
         }
         
         .oopz-icon img {
@@ -201,6 +205,92 @@
             image-rendering: auto;
         }
         
+        /* 相册样式 */
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .album-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .album-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .album-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .album-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .album-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 10px;
+            color: white;
+            font-size: 0.9em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .album-item:hover .album-overlay {
+            opacity: 1;
+        }
+        
+        .album-overlay div {
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .album-overlay small {
+            font-size: 0.75em;
+            opacity: 0.9;
+        }
+        
+        /* 添加照片按钮 */
+        .add-photo-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            aspect-ratio: 1;
+        }
+        
+        .add-photo-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 219, 222, 0.3);
+        }
+        
+        .add-photo-btn i {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
         /* 更新指示器 */
         .update-indicator {
             font-size: 0.8em;
@@ -215,7 +305,7 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-gamepad"></i> Steam好友主页</h1>
-            <p class="subtitle">永久头像链接 | Steam个人主页直达</p>
+            <p class="subtitle">永久头像链接 | Steam个人主页直达 | 纪念相册</p>
             <p>点击头像下方按钮访问好友的Steam主页</p>
         </header>
         
@@ -230,11 +320,11 @@
                     </div>
                     <a href="https://oopz.cn/i/vq88lo" target="_blank" class="oopz-link">
                         <div class="oopz-icon">
-                            <img src="oopz.jpg" alt="OOPZ" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"36\" height=\"36\"><rect width=\"36\" height=\"36\" fill=\"%230066ff\"/><text x=\"18\" y=\"20\" font-size=\"16\" fill=\"white\" font-family=\"Arial\" font-weight=\"bold\" text-anchor=\"middle\">O</text></svg>'">
+                            <img src="oopz.jpg" alt="OOPZ" onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"36\" height=\"36\"><rect width=\"36\" height=\"36\" fill=\"#0066ff\"/><text x=\"18\" y=\"20\" font-size=\"16\" fill=\"white\" font-family=\"Arial\" font-weight=\"bold\" text-anchor=\"middle\">O</text></svg>'">
                         </div>
                         <div>
                             <div style="font-weight: bold;">OOPZ 主页</div>
-                            <div style="font-size: 0.9em; color: #b0b0ff;">点击访问 OOPZ语音频道</div>
+                            <div style="font-size: 0.9em; color: #b0b0ff;">点击访问 OOPZ</div>
                         </div>
                     </a>
                 </div>
@@ -250,13 +340,31 @@
                         <div style="color: #a0a0ff;">Steam好友</div>
                     </div>
                     <div class="update-indicator" style="margin-top: 15px;">
-                       
+                        
+                    </div>
+                </div>
+                
+                <!-- 相册说明 -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-images"></i>
+                        相册说明
+                    </div>
+                    <div style="font-size: 0.9em; color: #a0a0ff; line-height: 1.5;">
+                        <p>📸 相册使用方法：</p>
+                        <ol style="margin-left: 15px; margin-top: 10px;">
+                            <li>将照片命名为 photo1.jpg, photo2.jpg...</li>
+                            <li>上传到网站根目录</li>
+                            <li>系统会自动加载显示</li>
+                            <li>点击照片可放大查看</li>
+                        </ol>
                     </div>
                 </div>
             </div>
             
             <!-- 右侧 -->
             <div>
+                <!-- Steam好友列表 -->
                 <div class="panel">
                     <div class="panel-title">
                         <i class="fab fa-steam"></i>
@@ -270,7 +378,7 @@
                                  alt="业火" 
                                  class="gif-avatar" 
                                  style="border-color: #3498db;">
-                            <div class="friend-name">🔥 业火</div>
+                            <div class="friend-name">业火</div>
                             <a href="https://steamcommunity.com/profiles/76561198131949830" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -282,7 +390,7 @@
                                  alt="染桐" 
                                  class="friend-avatar" 
                                  style="border-color: #e74c3c;">
-                            <div class="friend-name">🍂 染桐</div>
+                            <div class="friend-name">染桐</div>
                             <a href="https://steamcommunity.com/profiles/76561198321055486" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -294,19 +402,19 @@
                                  alt="蓝天" 
                                  class="friend-avatar" 
                                  style="border-color: #2ecc71;">
-                            <div class="friend-name">☁️ 蓝天</div>
+                            <div class="friend-name">蓝天</div>
                             <a href="https://steamcommunity.com/profiles/76561198328781801" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
                         </div>
                         
-                        <!-- sora -->
+                        <!-- Sora -->
                         <div class="steam-friend">
                             <img src="https://avatars.fastly.steamstatic.com/3a570f748096459c44a2ff63fbb796f010aa28a5_full.jpg" 
                                  alt="sora" 
                                  class="friend-avatar" 
                                  style="border-color: #f39c12;">
-                            <div class="friend-name">🌌 sora</div>
+                            <div class="friend-name">Sora</div>
                             <a href="https://steamcommunity.com/profiles/76561198239068292" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -317,7 +425,7 @@
                             <img src="https://shared.fastly.steamstatic.com/community_assets/images/items/3296260/ea50cd34208e8b6470a0ba96171c98b8d4fb7176.gif" 
                                  alt="亚托莉" 
                                  class="gif-avatar">
-                            <div class="friend-name">🎀 亚托莉</div>
+                            <div class="friend-name">亚托莉</div>
                             <a href="https://steamcommunity.com/profiles/76561198997805405" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -329,7 +437,7 @@
                                  alt="雪音" 
                                  class="friend-avatar" 
                                  style="border-color: #1abc9c;">
-                            <div class="friend-name">❄️ 雪音</div>
+                            <div class="friend-name">雪音</div>
                             <a href="https://steamcommunity.com/profiles/76561198285340324" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -341,7 +449,7 @@
                                  alt="023" 
                                  class="friend-avatar" 
                                  style="border-color: #e67e22;">
-                            <div class="friend-name">🔢 023</div>
+                            <div class="friend-name">023</div>
                             <a href="https://steamcommunity.com/profiles/76561198256933910" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -353,7 +461,7 @@
                                  alt="柠檬" 
                                  class="friend-avatar" 
                                  style="border-color: #95a5a6;">
-                            <div class="friend-name">🍋 柠檬</div>
+                            <div class="friend-name">柠檬</div>
                             <a href="https://steamcommunity.com/profiles/76561198281864482" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
@@ -365,10 +473,26 @@
                                  alt="众星陨落" 
                                  class="friend-avatar" 
                                  style="border-color: #d35400;">
-                            <div class="friend-name">⭐ 众星陨落</div>
+                            <div class="friend-name">众星陨落</div>
                             <a href="https://steamcommunity.com/profiles/76561199146963946" target="_blank" class="friend-link">
                                 <i class="fab fa-steam"></i> 访问Steam主页
                             </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 纪念相册 -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-images"></i>
+                        纪念相册
+                    </div>
+                    
+                    <div id="photoAlbum" class="album-grid">
+                        <!-- 相册内容会通过JavaScript动态加载 -->
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #a0a0ff;">
+                            <i class="fas fa-camera" style="font-size: 2em; margin-bottom: 15px;"></i>
+                            <div>相册加载中...</div>
                         </div>
                     </div>
                 </div>
@@ -376,16 +500,166 @@
         </div>
         
         <footer>
-            <p>© 2024 Steam好友主页 | 永久头像链接 | 个人主页直达</p>
+            <p>© 2024 Steam好友主页 | 永久头像链接 | 纪念相册</p>
             <p style="margin-top: 10px; font-size: 0.9em; color: #66c0f4;">
                 <i class="fas fa-image"></i> 头像自动更新 | 
-                <i class="fas fa-external-link-alt"></i> 点击访问Steam主页 | 
-                <i class="fas fa-users"></i> 共9位好友
+                <i class="fas fa-external-link-alt"></i> Steam主页直达 | 
+                <i class="fas fa-camera"></i> 相册功能
             </p>
         </footer>
     </div>
 
+    <!-- Lightbox 相册库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox-plus-jquery.min.js"></script>
+    
     <script>
+        // 相册数据
+        const photoAlbums = [
+            {
+                id: 1,
+                title: "第一次五黑吃鸡",
+                date: "2023.06.15",
+                filename: "photo1.jpg"
+            },
+            {
+                id: 2,
+                title: "Dota2战队赛冠军",
+                date: "2023.08.22",
+                filename: "photo2.jpg"
+            },
+            {
+                id: 3,
+                title: "CS:GO线下聚会",
+                date: "2023.10.05",
+                filename: "photo3.jpg"
+            },
+            {
+                id: 4,
+                title: "Apex三排登顶",
+                date: "2023.11.30",
+                filename: "photo4.jpg"
+            },
+            {
+                id: 5,
+                title: "跨年夜游戏派对",
+                date: "2023.12.31",
+                filename: "photo5.jpg"
+            },
+            {
+                id: 6,
+                title: "新赛季开黑纪念",
+                date: "2024.01.20",
+                filename: "photo6.jpg"
+            }
+        ];
+
+        // 检测图片是否存在
+        async function checkImageExists(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
+        // 加载相册
+        async function loadPhotoAlbum() {
+            const albumContainer = document.getElementById('photoAlbum');
+            
+            try {
+                // 先检查哪些照片存在
+                const existingPhotos = [];
+                
+                for (const photo of photoAlbums) {
+                    const exists = await checkImageExists(photo.filename);
+                    if (exists) {
+                        existingPhotos.push(photo);
+                    }
+                }
+                
+                if (existingPhotos.length === 0) {
+                    // 没有找到照片，显示提示
+                    albumContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #a0a0ff;">
+                            <i class="fas fa-images" style="font-size: 3em; margin-bottom: 20px;"></i>
+                            <div style="font-size: 1.1em; margin-bottom: 15px;">相册空空如也</div>
+                            <div style="font-size: 0.9em; color: #888; line-height: 1.5;">
+                                请上传照片到网站根目录，命名为：<br>
+                                photo1.jpg, photo2.jpg, photo3.jpg...
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 生成相册HTML
+                let albumHtml = '';
+                
+                existingPhotos.forEach(photo => {
+                    albumHtml += `
+                        <a href="${photo.filename}" data-lightbox="album" data-title="${photo.title} - ${photo.date}" class="album-item">
+                            <img src="${photo.filename}" alt="${photo.title}" loading="lazy">
+                            <div class="album-overlay">
+                                <div>${photo.title}</div>
+                                <small>${photo.date}</small>
+                            </div>
+                        </a>
+                    `;
+                });
+                
+                // 添加添加照片按钮
+                albumHtml += `
+                    <div class="album-item add-photo-btn" onclick="showUploadGuide()">
+                        <i class="fas fa-plus-circle"></i>
+                        <div>添加照片</div>
+                    </div>
+                `;
+                
+                albumContainer.innerHTML = albumHtml;
+                
+                // 初始化 Lightbox
+                lightbox.option({
+                    'resizeDuration': 200,
+                    'wrapAround': true,
+                    'albumLabel': '照片 %1 / %2'
+                });
+                
+            } catch (error) {
+                console.error('加载相册失败:', error);
+                albumContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #e74c3c;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3em; margin-bottom: 20px;"></i>
+                        <div>加载相册失败</div>
+                        <div style="font-size: 0.9em; color: #888; margin-top: 10px;">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 显示上传指南
+        function showUploadGuide() {
+            const guide = `
+                如何上传照片：
+                
+                1. 将照片命名为：
+                   photo1.jpg, photo2.jpg, photo3.jpg...
+                
+                2. 通过以下方式上传：
+                   - GitHub: 直接上传到仓库根目录
+                   - Vercel: 重新部署包含照片的项目
+                   - FTP: 上传到网站根目录
+                
+                3. 支持的格式：JPG, PNG, GIF
+                
+                4. 建议尺寸：正方形或接近正方形
+                
+                5. 上传后刷新页面即可看到照片
+            `;
+            
+            alert(guide);
+        }
+
         // 页面初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 访问计数
@@ -393,12 +667,8 @@
             visitCount++;
             localStorage.setItem('steamPageVisits', visitCount);
             
-            // 控制台欢迎信息
-            console.log('🎮 Steam好友主页已加载');
-            console.log('👥 好友数量: 9');
-            console.log('🖼️ 所有头像使用Steam永久链接');
-            console.log('🔗 主页链接使用SteamID64格式');
-            console.log('🚀 OOPZ入口: https://oopz.fun');
+            // 加载相册
+            loadPhotoAlbum();
             
             // 头像加载错误处理
             document.querySelectorAll('.friend-avatar, .gif-avatar').forEach(img => {
@@ -410,8 +680,30 @@
                     this.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="184" height="184"><circle cx="92" cy="92" r="80" fill="${color}"/><text x="92" y="108" font-size="64" fill="white" font-family="Arial" text-anchor="middle">${firstChar}</text></svg>`;
                 });
             });
+            
+            // OOPZ图标错误处理
+            const oopzIcon = document.querySelector('.oopz-icon img');
+            if (oopzIcon) {
+                oopzIcon.addEventListener('error', function() {
+                    this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect width="36" height="36" fill="#0066ff"/><text x="18" y="22" font-size="20" fill="white" font-family="Arial" font-weight="bold" text-anchor="middle">O</text></svg>';
+                });
+            }
+            
+            // 控制台欢迎信息
+            console.log('🎮 Steam好友主页已加载');
+            console.log('👥 好友数量: 9');
+            console.log('🖼️ OOPZ图标: 读取 oopz.jpg');
+            console.log('📸 相册功能: 已启用');
+            console.log('🔗 主页链接: SteamID64格式');
         });
+        
+        // 每5分钟检查一次新照片
+        setInterval(() => {
+            const albumContainer = document.getElementById('photoAlbum');
+            if (albumContainer && !albumContainer.innerHTML.includes('加载中')) {
+                loadPhotoAlbum();
+            }
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
-
