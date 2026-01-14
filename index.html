@@ -150,14 +150,14 @@
             box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
         }
         
-        /* OOPZ链接 - 修复版 */
+        /* OOPZ链接 - 修复错位版 */
         .oopz-link {
             display: flex;
             align-items: center;
             background: linear-gradient(135deg, 
                 rgba(0, 150, 255, 0.08), 
                 rgba(100, 0, 255, 0.08));
-            padding: 18px;
+            padding: 20px;
             border-radius: 15px;
             text-decoration: none;
             color: white;
@@ -165,20 +165,43 @@
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
         }
         
         .oopz-link:hover {
             background: linear-gradient(135deg, 
                 rgba(0, 150, 255, 0.15), 
                 rgba(100, 0, 255, 0.15));
-            transform: translateX(8px) scale(1.02);
+            transform: translateX(8px);
             border-color: rgba(0, 219, 222, 0.4);
             box-shadow: 0 8px 25px rgba(0, 150, 255, 0.15);
         }
         
+        .oopz-link::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            transition: transform 0.5s ease;
+        }
+        
+        .oopz-link:hover::after {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+        
         .oopz-icon {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -187,25 +210,54 @@
             overflow: hidden;
             flex-shrink: 0;
             background: linear-gradient(135deg, #0066ff, #6600ff);
-            padding: 2px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+            position: relative;
+            z-index: 1;
         }
         
         .oopz-icon img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* 针对500x500图片优化 */
             border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        /* 确保500x500图片居中显示 */
+        .oopz-icon img.oopz-large-img {
+            transform: scale(1.1); /* 稍微放大确保填充 */
+            object-position: center center;
         }
         
         .oopz-link:hover .oopz-icon {
-            box-shadow: 0 6px 18px rgba(0, 102, 255, 0.4);
-            transform: rotate(5deg);
+            box-shadow: 0 6px 18px rgba(0, 102, 255, 0.5);
+            transform: rotate(5deg) scale(1.05);
         }
         
         .oopz-link:hover .oopz-icon img {
-            transform: scale(1.05);
+            transform: scale(1.1);
+        }
+        
+        .oopz-text {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+        
+        .oopz-text-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 4px;
+            background: linear-gradient(45deg, #66c0f4, #b19cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .oopz-text-subtitle {
+            font-size: 0.85em;
+            color: #b0b0ff;
+            opacity: 0.9;
         }
         
         footer {
@@ -339,6 +391,19 @@
             color: #a0a0ff;
             font-size: 1.1em;
         }
+        
+        /* 修复头像加载样式 */
+        .avatar-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -360,11 +425,12 @@
                     </div>
                     <a href="https://oopz.cn/i/vq88lo" target="_blank" class="oopz-link">
                         <div class="oopz-icon">
-                            <img src="oopz.jpg" alt="OOPZ" onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\"><rect width=\"48\" height=\"48\" fill=\"#0066ff\" rx=\"10\"/><text x=\"24\" y=\"28\" font-size=\"22\" fill=\"white\" font-family=\"Arial\" font-weight=\"bold\" text-anchor=\"middle\">O</text></svg>'">
+                            <img src="oopz.jpg" alt="OOPZ" class="oopz-large-img" 
+                                 onerror="this.onerror=null; this.classList.remove('oopz-large-img'); this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"50\" height=\"50\"><rect width=\"50\" height=\"50\" fill=\"%230066ff\" rx=\"10\"/><text x=\"25\" y=\"30\" font-size=\"24\" fill=\"white\" font-family=\"Arial\" font-weight=\"bold\" text-anchor=\"middle\">O</text></svg>';">
                         </div>
-                        <div>
-                            <div style="font-weight: bold; font-size: 1.1em;">OOPZ 主页</div>
-                            <div style="font-size: 0.85em; color: #b0b0ff; margin-top: 3px;">点击访问 OOPZ 应用</div>
+                        <div class="oopz-text">
+                            <div class="oopz-text-title">OOPZ 主页</div>
+                            <div class="oopz-text-subtitle">点击访问 OOPZ 应用</div>
                         </div>
                     </a>
                 </div>
@@ -707,6 +773,27 @@
             alert(guide);
         }
 
+        // 修复OOPZ图标显示
+        function fixOopzIcon() {
+            const oopzImg = document.querySelector('.oopz-icon img');
+            if (oopzImg) {
+                // 检查图片是否加载成功
+                oopzImg.onload = function() {
+                    // 如果是500x500的大图片，添加特定类名
+                    if (oopzImg.naturalWidth === 500 && oopzImg.naturalHeight === 500) {
+                        oopzImg.classList.add('oopz-large-img');
+                    }
+                };
+                
+                // 如果图片已经加载完成
+                if (oopzImg.complete) {
+                    if (oopzImg.naturalWidth === 500 && oopzImg.naturalHeight === 500) {
+                        oopzImg.classList.add('oopz-large-img');
+                    }
+                }
+            }
+        }
+
         // 页面初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 访问计数
@@ -716,6 +803,9 @@
             
             // 加载相册
             loadPhotoAlbum();
+            
+            // 修复OOPZ图标
+            fixOopzIcon();
             
             // 头像加载错误处理
             document.querySelectorAll('.friend-avatar, .gif-avatar').forEach(img => {
@@ -728,18 +818,10 @@
                 });
             });
             
-            // OOPZ图标错误处理
-            const oopzIcon = document.querySelector('.oopz-icon img');
-            if (oopzIcon) {
-                oopzIcon.addEventListener('error', function() {
-                    this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="48" height="48" fill="#0066ff" rx="10"/><text x="24" y="28" font-size="22" fill="white" font-family="Arial" font-weight="bold" text-anchor="middle">O</text></svg>';
-                });
-            }
-            
             // 控制台欢迎信息
             console.log('🎮 Steam好友主页已加载');
             console.log('👥 好友数量: 9');
-            console.log('🖼️ OOPZ图标: 已修复500x500图片显示问题');
+            console.log('🖼️ OOPZ图标: 已修复500x500图片错位问题');
             console.log('📸 相册功能: 已启用');
             console.log('🔗 主页链接: SteamID64格式');
             console.log('📍 访问次数:', visitCount);
