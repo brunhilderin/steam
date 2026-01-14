@@ -29,7 +29,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px; /* 增加最大宽度适应4列 */
             margin: 0 auto;
         }
         
@@ -89,14 +89,32 @@
             align-items: center;
             gap: 10px;
         }
-
-        <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "15f6220b038c4e3cb20809b6c5142d54"}'></script><!-- End Cloudflare Web Analytics -->
         
-        /* Steam好友网格 */
+        /* Steam好友网格 - 修改为4列布局 */
         .steam-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            /* 修改这里：使用固定列数而不是auto-fill */
+            grid-template-columns: repeat(4, minmax(220px, 1fr));
             gap: 20px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 1400px) {
+            .steam-grid {
+                grid-template-columns: repeat(3, minmax(220px, 1fr));
+            }
+        }
+        
+        @media (max-width: 1100px) {
+            .steam-grid {
+                grid-template-columns: repeat(2, minmax(220px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .steam-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .steam-friend {
@@ -132,6 +150,10 @@
             font-weight: bold;
             margin-bottom: 15px;
             font-size: 1.1em;
+            min-height: 40px; /* 确保名称高度一致 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .friend-link {
@@ -319,6 +341,10 @@
     </style>
 </head>
 <body>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "15f6220b038c4e3cb20809b6c5142d54"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+    
     <div class="container">
         <header>
             <h1><i class="fas fa-gamepad"></i> Steam好友主页</h1>
@@ -701,9 +727,10 @@
             // 控制台欢迎信息
             console.log('🎮 Steam好友主页已加载');
             console.log('👥 好友数量: 9');
+            console.log('📊 布局: 4列网格（桌面端）');
             console.log('🖼️ 所有头像使用Steam永久链接');
             console.log('🔗 主页链接使用SteamID64格式');
-            console.log('🚀 OOPZ入口: https://oopz.fun');
+            console.log('🚀 OOPZ入口: https://oopz.cn/i/vq88lo');
             console.log('📸 相册功能: 已启用');
         });
         
